@@ -20,6 +20,21 @@
 <div class="error" style="margin-bottom:10px;">ไม่พบ schedule version ของเดือนนี้</div>
 {% endif %}
 
+<div class="card legend-card" style="margin-bottom:10px;">
+  <h2 style="margin-bottom:8px;">Legend</h2>
+  <div class="legend-grid">
+    <div><span class="legend-dot sch-a"></span><b>A</b> = 06.00 ~ 15.00</div>
+    <div><span class="legend-dot sch-b"></span><b>B</b> = 13.00 ~ 22.00</div>
+    <div><span class="legend-dot sch-c"></span><b>C</b> = 21.30 ~ 06.30</div>
+    <div><span class="legend-dot sch-n"></span><b>N</b> = 09.00 ~ 18.00</div>
+    <div><span class="legend-dot sch-x"></span><b>X</b> = OFF (วันหยุดประจำสัปดาห์)</div>
+    <div><span class="legend-dot sch-h"></span><b>H</b> = Holiday (หยุดนักขัตฤกษ์)</div>
+    <div><span class="legend-dot sch-hd"></span><b>HD</b> = Harmony Day (วันหยุดพิเศษ)</div>
+    <div><span class="legend-dot sch-l"></span><b>L</b> = WOP (หยุดไม่จ่ายเงินเดือน)</div>
+    <div><span class="legend-dot sch-v"></span><b>V</b> = V Leave / วันหยุดพิเศษ</div>
+  </div>
+</div>
+
 <div class="card" style="overflow:auto;">
   <table class="matrix-table">
     <thead>
@@ -39,12 +54,24 @@
         {% for c in r.cells %}
           {% set code = c.code %}
           {% set cls = 'sch-default' %}
-          {% if code.startswith('HD') or code.startswith('V') %}
-            {% set cls = 'sch-leave' %}
+          {% if code == 'A' %}
+            {% set cls = 'sch-a' %}
+          {% elif code == 'B' %}
+            {% set cls = 'sch-b' %}
+          {% elif code == 'C' %}
+            {% set cls = 'sch-c' %}
+          {% elif code == 'N' %}
+            {% set cls = 'sch-n' %}
           {% elif code == 'X' %}
             {% set cls = 'sch-x' %}
-          {% elif code in ['A','B','C','N'] %}
-            {% set cls = 'sch-shift' %}
+          {% elif code == 'H' %}
+            {% set cls = 'sch-h' %}
+          {% elif code == 'L' %}
+            {% set cls = 'sch-l' %}
+          {% elif code.startswith('HD') %}
+            {% set cls = 'sch-hd' %}
+          {% elif code.startswith('V') %}
+            {% set cls = 'sch-v' %}
           {% endif %}
           <td class="{{ cls }}">{{ code }}</td>
         {% endfor %}

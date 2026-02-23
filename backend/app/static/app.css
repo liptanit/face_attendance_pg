@@ -41,10 +41,20 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
 .matrix-table .sticky-col { position: sticky; background:#0f1a33; z-index:2; text-align:left; }
 .matrix-table .sticky-col-1 { left: 0; min-width:90px; }
 .matrix-table .sticky-col-2 { left: 90px; min-width:180px; }
-.sch-shift { background:#d8f7ff; color:#081018; font-weight:700; }
-.sch-leave { background:#63ff63; color:#041904; font-weight:700; }
+.sch-a { background:#9fe7ff; color:#05141a; font-weight:700; }
+.sch-b { background:#ffd39f; color:#1a1105; font-weight:700; }
+.sch-c { background:#d6c4ff; color:#120a1f; font-weight:700; }
+.sch-n { background:#fff4a3; color:#1b1806; font-weight:700; }
 .sch-x { background:#7cf5ff; color:#021417; font-weight:700; }
+.sch-h { background:#ffb3b3; color:#250606; font-weight:700; }
+.sch-hd { background:#63ff63; color:#041904; font-weight:700; }
+.sch-l { background:#d9d9d9; color:#111; font-weight:700; }
+.sch-v { background:#9dffb4; color:#06200e; font-weight:700; }
 .sch-default { background:#f0f0f0; color:#111; }
+
+.legend-card { background:#111d38; }
+.legend-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:6px 14px; font-size:13px; }
+.legend-dot { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:8px; border:1px solid rgba(0,0,0,.25); vertical-align:middle; }
 
 .cam-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:12px; }
 .cam-card { min-height: 320px; }
