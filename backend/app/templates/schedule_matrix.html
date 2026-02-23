@@ -39,8 +39,21 @@
   </div>
 </div>
 
+<div class="card" style="margin-bottom:10px;">
+  <div class="row" style="align-items:center; gap:18px;">
+    <label style="margin:0; display:flex; align-items:center; gap:8px; cursor:pointer;">
+      <input id="toggle-special-only" type="checkbox" style="width:auto; margin:0;" />
+      แสดงเฉพาะวันเสาร์-อาทิตย์ / วันหยุดไทย
+    </label>
+    <label style="margin:0; display:flex; align-items:center; gap:8px; cursor:pointer;">
+      <input id="toggle-holiday-name" type="checkbox" style="width:auto; margin:0;" checked />
+      แสดงชื่อวันหยุดไทยบนหัวคอลัมน์
+    </label>
+  </div>
+</div>
+
 <div class="card">
-  <table class="matrix-table">
+  <table class="matrix-table" id="schedule-matrix-table">
     <thead>
       <tr>
         <th class="sticky-col sticky-col-1" rowspan="2">รหัส</th>
@@ -52,7 +65,7 @@
           {% elif dm.is_weekend %}
             {% set hcls = hcls + ' day-weekend' %}
           {% endif %}
-          <th class="{{ hcls }}" title="{{ dm.holiday_name or '' }}">{{ dm.weekday }}</th>
+          <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">{{ dm.weekday }}</th>
         {% endfor %}
       </tr>
       <tr>
@@ -63,7 +76,12 @@
           {% elif dm.is_weekend %}
             {% set hcls = hcls + ' day-weekend' %}
           {% endif %}
-          <th class="{{ hcls }}" title="{{ dm.holiday_name or '' }}">{{ dm.day }}</th>
+          <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">
+            <div>{{ dm.day }}</div>
+            {% if dm.is_holiday %}
+              <div class="holiday-name" title="{{ dm.holiday_name }}">{{ dm.holiday_name }}</div>
+            {% endif %}
+          </th>
         {% endfor %}
       </tr>
     </thead>
@@ -100,11 +118,39 @@
           {% elif code.startswith('V') %}
             {% set cls = cls + ' sch-v' %}
           {% endif %}
-          <td class="{{ cls }}" title="{{ c.holiday_name or '' }}">{{ code }}</td>
+          <td class="{{ cls }} day-col" data-day="{{ c.day }}" data-special="{{ '1' if (c.is_weekend or c.is_holiday) else '0' }}" title="{{ c.holiday_name or '' }}">{{ code }}</td>
         {% endfor %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<script>
+(function () {
+  const specialOnly = document.getElementById('toggle-special-only');
+  const holidayNameToggle = document.getElementById('toggle-holiday-name');
+
+  function applySpecialFilter() {
+    const on = specialOnly && specialOnly.checked;
+    document.querySelectorAll('#schedule-matrix-table .day-col').forEach(el => {
+      const isSpecial = el.dataset.special === '1';
+      el.style.display = (!on || isSpecial) ? '' : 'none';
+    });
+  }
+
+  function applyHolidayNameToggle() {
+    const on = holidayNameToggle && holidayNameToggle.checked;
+    document.querySelectorAll('#schedule-matrix-table .holiday-name').forEach(el => {
+      el.style.display = on ? '' : 'none';
+    });
+  }
+
+  if (specialOnly) specialOnly.addEventListener('change', applySpecialFilter);
+  if (holidayNameToggle) holidayNameToggle.addEventListener('change', applyHolidayNameToggle);
+
+  applySpecialFilter();
+  applyHolidayNameToggle();
+})();
+</script>
 {% endblock %}
