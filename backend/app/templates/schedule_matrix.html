@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Schedule Matrix</h1>
+
+<form method="get" action="/schedule/matrix" class="row" style="margin-bottom:10px;align-items:end;">
+  <div>
+    <label>Month</label>
+    <input type="month" name="month" value="{{ month }}" />
+  </div>
+  <div>
+    <button type="submit">Load</button>
+  </div>
+</form>
+
+{% if version %}
+<div class="muted" style="margin-bottom:10px;">
+  Version: {{ version.file_name }} | Uploaded by: {{ version.uploaded_by }} | Created at: {{ version.created_at }}
+</div>
+{% else %}
+<div class="error" style="margin-bottom:10px;">ไม่พบ schedule version ของเดือนนี้</div>
+{% endif %}
+
+<div class="card" style="overflow:auto;">
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th class="sticky-col sticky-col-1">รหัส</th>
+        <th class="sticky-col sticky-col-2">Name</th>
+        {% for d in days %}
+          <th>{{ d }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="sticky-col sticky-col-1">{{ r.emp_code }}</td>
+        <td class="sticky-col sticky-col-2">{{ r.full_name }}</td>
+        {% for c in r.cells %}
+          {% set code = c.code %}
+          {% set cls = 'sch-default' %}
+          {% if code.startswith('HD') or code.startswith('V') %}
+            {% set cls = 'sch-leave' %}
+          {% elif code == 'X' %}
+            {% set cls = 'sch-x' %}
+          {% elif code in ['A','B','C','N'] %}
+            {% set cls = 'sch-shift' %}
+          {% endif %}
+          <td class="{{ cls }}">{{ code }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

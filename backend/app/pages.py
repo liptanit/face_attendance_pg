@@ -2,6 +2,7 @@ import io
 import os
 import uuid
 from datetime import date, datetime
+from calendar import monthrange
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from fastapi import APIRouter, Request, Form, UploadFile, File
@@ -338,6 +339,93 @@ def schedule_page(request: Request, month: str | None = None, db: Session = Depe
             "result": None,
             "default_path": settings.SCHEDULE_TEMPLATE_PATH,
             **data,
+        },
+    )
+
+
+@router.get("/schedule/matrix", response_class=HTMLResponse)
+def schedule_matrix(request: Request, month: str | None = None, db: Session = Depends(get_db)):
+    redir = require_login(request)
+    if redir:
+        return redir
+
+    if month:
+        try:
+            month_start = datetime.strptime(month, "%Y-%m").date().replace(day=1)
+        except Exception:
+            month_start = date.today().replace(day=1)
+    else:
+        v = db.execute(text("SELECT month_start FROM schedule_versions ORDER BY created_at DESC LIMIT 1")).scalar()
+        month_start = v or date.today().replace(day=1)
+
+    version = db.execute(
+        text(
+            """
+            SELECT id, month_start, uploaded_by, file_name, created_at
+            FROM schedule_versions
+            WHERE month_start = :m
+            ORDER BY created_at DESC
+            LIMIT 1
+            """
+        ),
+        {"m": month_start},
+    ).mappings().first()
+
+    day_count = monthrange(month_start.year, month_start.month)[1]
+    days = list(range(1, day_count + 1))
+
+    employees = db.execute(
+        text(
+            """
+            SELECT id, emp_code, full_name
+            FROM employees
+            WHERE is_active=true
+            ORDER BY emp_code
+            """
+        )
+    ).mappings().all()
+
+    matrix = []
+    if version:
+        rows = db.execute(
+            text(
+                """
+                SELECT sa.employee_id, EXTRACT(DAY FROM sa.work_date)::int AS day_no,
+                       COALESCE(sa.note, sa.shift_code, '') AS raw_code,
+                       sa.shift_code,
+                       sa.note
+                FROM schedule_assignments sa
+                WHERE sa.version_id = :vid
+                """
+            ),
+            {"vid": version["id"]},
+        ).mappings().all()
+
+        by_emp_day = {}
+        for r in rows:
+            key = (str(r["employee_id"]), int(r["day_no"]))
+            code = (r.get("note") or r.get("shift_code") or "").strip().upper()
+            by_emp_day[key] = code
+
+        for e in employees:
+            day_cells = []
+            for d in days:
+                code = by_emp_day.get((str(e["id"]), d), "")
+                day_cells.append({"day": d, "code": code})
+            matrix.append({
+                "emp_code": e["emp_code"],
+                "full_name": e["full_name"],
+                "cells": day_cells,
+            })
+
+    return templates.TemplateResponse(
+        "schedule_matrix.html",
+        {
+            "request": request,
+            "month": month_start.strftime("%Y-%m"),
+            "days": days,
+            "rows": matrix,
+            "version": version,
         },
     )
 

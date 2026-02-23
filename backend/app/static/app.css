@@ -36,6 +36,16 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
 .emp-card .no-photo { width:100%; height:150px; display:flex; align-items:center; justify-content:center; color:#9aa3b2; background:#11192d; }
 .emp-card .meta { padding:8px; font-size:12px; }
 
+.matrix-table { min-width: 1400px; }
+.matrix-table th, .matrix-table td { text-align:center; min-width:34px; padding:6px; }
+.matrix-table .sticky-col { position: sticky; background:#0f1a33; z-index:2; text-align:left; }
+.matrix-table .sticky-col-1 { left: 0; min-width:90px; }
+.matrix-table .sticky-col-2 { left: 90px; min-width:180px; }
+.sch-shift { background:#d8f7ff; color:#081018; font-weight:700; }
+.sch-leave { background:#63ff63; color:#041904; font-weight:700; }
+.sch-x { background:#7cf5ff; color:#021417; font-weight:700; }
+.sch-default { background:#f0f0f0; color:#111; }
+
 .cam-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:12px; }
 .cam-card { min-height: 320px; }
 .cam-preview { width:100%; height:220px; object-fit:cover; border-radius:10px; border:1px solid #22335a; background:#000; }

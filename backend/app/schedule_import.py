@@ -70,12 +70,22 @@ def import_schedule_xlsx(db: Session, file_bytes: bytes, file_name: str, uploade
     import io
     wb = load_workbook(io.BytesIO(file_bytes), data_only=True)
 
-    # choose sheet: prefer a month sheet like FEB/JAN/... else first
+    # choose sheet priority:
+    # 1) explicit "Approve" sheet
+    # 2) month-like sheet (JAN/FEB/...)
+    # 3) first sheet
     ws = None
     for name in wb.sheetnames:
-        if name.upper()[:3] in MONTH_MAP:
+        if name.strip().lower() == "approve":
             ws = wb[name]
             break
+
+    if ws is None:
+        for name in wb.sheetnames:
+            if name.upper()[:3] in MONTH_MAP:
+                ws = wb[name]
+                break
+
     if ws is None:
         ws = wb[wb.sheetnames[0]]
 
