@@ -50,15 +50,15 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
 .day-today {
   background:#0e5aa7 !important;
   color:#ffffff !important;
-  box-shadow: inset 0 -2px 0 #8ed0ff, 0 3px 10px rgba(19, 120, 255, 0.35);
+  box-shadow: inset 0 -2px 0 #8ed0ff, 0 2px 8px rgba(19, 120, 255, 0.24);
   position: relative;
   z-index: 3;
-  animation: todayPulse 2.2s ease-in-out infinite;
+  animation: todayPulse 3.2s ease-in-out infinite;
 }
 .col-today {
   box-shadow: inset 0 0 0 2px #1e90ff;
   font-weight: 800;
-  animation: todayPulseSoft 2.2s ease-in-out infinite;
+  animation: todayPulseSoft 3.2s ease-in-out infinite;
 }
 .today-badge {
   display:inline-block;
@@ -73,12 +73,12 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
 .today-icon { font-size:11px; margin-left:2px; }
 
 @keyframes todayPulse {
-  0%, 100% { box-shadow: inset 0 -2px 0 #8ed0ff, 0 3px 10px rgba(19,120,255,0.35); }
-  50% { box-shadow: inset 0 -2px 0 #c7ebff, 0 6px 18px rgba(19,120,255,0.55); }
+  0%, 100% { box-shadow: inset 0 -2px 0 #8ed0ff, 0 2px 8px rgba(19,120,255,0.24); }
+  50% { box-shadow: inset 0 -2px 0 #bfe6ff, 0 4px 12px rgba(19,120,255,0.34); }
 }
 @keyframes todayPulseSoft {
   0%, 100% { box-shadow: inset 0 0 0 2px #1e90ff; }
-  50% { box-shadow: inset 0 0 0 3px #58b2ff; }
+  50% { box-shadow: inset 0 0 0 2px #4aa9ff; }
 }
 .sch-a { background:#9fe7ff; color:#05141a; font-weight:700; }
 .sch-b { background:#ffd39f; color:#1a1105; font-weight:700; }
