@@ -13,6 +13,14 @@
           <button id="btnCapture" type="button" disabled>Capture</button>
           <button id="btnFinalize" type="button" disabled>Finalize</button>
         </div>
+        <hr style="border-color:#22335a; opacity:.6; margin:10px 0;" />
+        <div class="row" style="align-items:end; gap:10px;">
+          <div style="min-width:320px;">
+            <label style="margin:0 0 6px 0;">Import images from file</label>
+            <input id="fileImages" type="file" accept="image/*" multiple />
+          </div>
+          <button id="btnUploadFiles" type="button">Upload selected images</button>
+        </div>
         <div class="muted" id="status">Session: {{ session_id }}</div>
       </div>
       <div>
@@ -29,6 +37,8 @@
     const btnFinalize = document.getElementById("btnFinalize");
     const statusEl = document.getElementById("status");
     const thumbs = document.getElementById("thumbs");
+    const fileImages = document.getElementById("fileImages");
+    const btnUploadFiles = document.getElementById("btnUploadFiles");
 
     let stream = null;
     let count = 0;
@@ -40,6 +50,25 @@
       statusEl.textContent = "Camera started.";
     }
 
+    async function uploadBlob(blob, filename = "frame.jpg"){
+      const form = new FormData();
+      form.append("file", blob, filename);
+
+      const r = await fetch(`/api/enroll/${sessionId}/upload`, {method: "POST", body: form});
+      const j = await r.json();
+      if(!j.ok){
+        throw new Error(j.error || "upload failed");
+      }
+      count = j.count;
+
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(blob);
+      thumbs.prepend(img);
+
+      statusEl.textContent = `Captured/Imported: ${count}`;
+      if(count >= 10) btnFinalize.disabled = false;
+    }
+
     async function capture(){
       const canvas = document.createElement("canvas");
       canvas.width = video.videoWidth;
@@ -48,23 +77,34 @@
       ctx.drawImage(video, 0, 0);
 
       const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.9));
+      await uploadBlob(blob, "frame.jpg");
+    }
 
-      const form = new FormData();
-      form.append("file", blob, "frame.jpg");
-
-      const r = await fetch(`/api/enroll/${sessionId}/upload`, {method: "POST", body: form});
-      const j = await r.json();
-      if(!j.ok){
-        alert(j.error || "upload failed");
+    async function uploadSelectedFiles(){
+      const files = Array.from(fileImages.files || []);
+      if(files.length === 0){
+        alert("กรุณาเลือกรูปก่อน");
         return;
       }
-      count = j.count;
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(blob);
-      thumbs.prepend(img);
 
-      statusEl.textContent = `Captured: ${count}`;
-      if(count >= 10) btnFinalize.disabled = false;
+      btnUploadFiles.disabled = true;
+      statusEl.textContent = `Uploading ${files.length} images...`;
+
+      let okCount = 0;
+      let failCount = 0;
+      for(const f of files){
+        try{
+          await uploadBlob(f, f.name || "import.jpg");
+          okCount++;
+        }catch(e){
+          console.error(e);
+          failCount++;
+        }
+      }
+
+      statusEl.textContent = `Import done: success ${okCount}, failed ${failCount}, total ${count}`;
+      btnUploadFiles.disabled = false;
+      fileImages.value = "";
     }
 
     async function finalize(){
@@ -91,6 +131,7 @@
 
     btnStart.addEventListener("click", () => startCam().catch(e => alert(e)));
     btnCapture.addEventListener("click", () => capture().catch(e => alert(e)));
+    btnUploadFiles.addEventListener("click", () => uploadSelectedFiles().catch(e => alert(e)));
     btnFinalize.addEventListener("click", () => finalize().catch(e => alert(e)));
   </script>
 {% endblock %}
