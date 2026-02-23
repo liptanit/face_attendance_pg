@@ -44,6 +44,13 @@
     let count = 0;
 
     async function startCam(){
+      if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){
+        const msg = "Browser block webcam on non-secure origin (HTTP). กรุณาใช้ HTTPS หรือเปิดผ่าน localhost";
+        statusEl.textContent = msg;
+        alert(msg);
+        return;
+      }
+
       stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
       video.srcObject = stream;
       btnCapture.disabled = false;
