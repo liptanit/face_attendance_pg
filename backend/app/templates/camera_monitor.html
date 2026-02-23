@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Camera Monitor (Worker)</h1>
+<p class="muted">อัปเดตล่าสุด: {{ now_local.strftime('%Y-%m-%d %H:%M:%S') }} ({{ tz }})</p>
+
+<div class="cam-grid">
+  {% for r in rows %}
+  <div class="card cam-card">
+    <div class="row" style="justify-content:space-between;align-items:center;">
+      <h2 style="margin:0">{{ r.camera_name }}</h2>
+      {% set st = (r.status or 'offline')|lower %}
+      <span class="badge {{ 'badge-on_time' if st=='online' else 'badge-absent' }}">{{ st|upper }}</span>
+    </div>
+
+    <div class="muted">Worker: {{ r.worker_name or '-' }}</div>
+    <div class="muted">Last seen: {{ r.last_seen or '-' }}</div>
+    <div class="muted">Last face event: {{ r.last_event_ts or '-' }}</div>
+    {% if r.last_error %}
+      <div class="error" style="margin-top:8px">Error: {{ r.last_error }}</div>
+    {% endif %}
+
+    <div style="margin-top:10px;">
+      {% if r.preview_url %}
+        <img src="{{ r.preview_url }}" alt="preview {{ r.camera_name }}" class="cam-preview" />
+      {% else %}
+        <div class="no-photo cam-preview">No preview</div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
