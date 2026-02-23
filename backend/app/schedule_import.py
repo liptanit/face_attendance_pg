@@ -18,6 +18,18 @@ OFF_CODES = {"OFF", "O", "WO", "HOL", "H", "AL", "SL", "VL", "L", "หยุด"
 OFFSITE_CODES = {"OFFSITE", "FIELD", "REMOTE", "WFH", "OS"}
 
 
+def _normalize_shift_code(raw: str) -> str:
+    code = (raw or "").strip().upper()
+    if not code:
+        return ""
+    # support suffix variants in schedules: HD1/HD2..., V1/V2...
+    if code.startswith("HD"):
+        return "HD"
+    if code.startswith("V"):
+        return "V"
+    return code
+
+
 def _sha256_bytes(b: bytes) -> str:
     h = hashlib.sha256()
     h.update(b)
@@ -171,17 +183,18 @@ def import_schedule_xlsx(db: Session, file_bytes: bytes, file_name: str, uploade
                 continue
 
             code = str(raw).strip().upper()
-            # normalize leave variants like HD* / V*
-            normalized_code = code
-            if normalized_code.startswith("HD"):
-                normalized_code = "HD"
-            elif normalized_code.startswith("V"):
-                normalized_code = "V"
+            normalized_code = _normalize_shift_code(code)
 
             work_date = date(year, month, day)
 
             is_workday = normalized_code in work_shift_codes
-            is_off_code = normalized_code in OFF_CODES
+            # Explicitly treat OFF/holiday codes as non-working (avoid UNMAPPED for X/HD/V/H/L)
+            is_off_code = (
+                normalized_code in OFF_CODES
+                or normalized_code in {"X", "H", "HD", "L", "V"}
+                or normalized_code.startswith("HD")
+                or normalized_code.startswith("V")
+            )
             is_offsite_code = normalized_code in OFFSITE_CODES
 
             is_day_off = is_off_code

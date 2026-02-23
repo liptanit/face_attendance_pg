@@ -391,7 +391,6 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
             text(
                 """
                 SELECT sa.employee_id, EXTRACT(DAY FROM sa.work_date)::int AS day_no,
-                       COALESCE(sa.note, sa.shift_code, '') AS raw_code,
                        sa.shift_code,
                        sa.note
                 FROM schedule_assignments sa
@@ -404,7 +403,13 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
         by_emp_day = {}
         for r in rows:
             key = (str(r["employee_id"]), int(r["day_no"]))
-            code = (r.get("note") or r.get("shift_code") or "").strip().upper()
+            code = (r.get("shift_code") or "").strip().upper()
+            if not code:
+                note = (r.get("note") or "").strip().upper()
+                if note.startswith("UNMAPPED:"):
+                    code = note.split(":", 1)[1].strip()
+                else:
+                    code = note
             by_emp_day[key] = code
 
         for e in employees:
