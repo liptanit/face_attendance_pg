@@ -43,10 +43,27 @@
   <table class="matrix-table">
     <thead>
       <tr>
-        <th class="sticky-col sticky-col-1">รหัส</th>
-        <th class="sticky-col sticky-col-2">Name</th>
-        {% for d in days %}
-          <th>{{ d }}</th>
+        <th class="sticky-col sticky-col-1" rowspan="2">รหัส</th>
+        <th class="sticky-col sticky-col-2" rowspan="2">Name</th>
+        {% for dm in day_meta %}
+          {% set hcls = 'day-header' %}
+          {% if dm.is_holiday %}
+            {% set hcls = hcls + ' day-holiday' %}
+          {% elif dm.is_weekend %}
+            {% set hcls = hcls + ' day-weekend' %}
+          {% endif %}
+          <th class="{{ hcls }}" title="{{ dm.holiday_name or '' }}">{{ dm.weekday }}</th>
+        {% endfor %}
+      </tr>
+      <tr>
+        {% for dm in day_meta %}
+          {% set hcls = 'day-header' %}
+          {% if dm.is_holiday %}
+            {% set hcls = hcls + ' day-holiday' %}
+          {% elif dm.is_weekend %}
+            {% set hcls = hcls + ' day-weekend' %}
+          {% endif %}
+          <th class="{{ hcls }}" title="{{ dm.holiday_name or '' }}">{{ dm.day }}</th>
         {% endfor %}
       </tr>
     </thead>
@@ -58,26 +75,32 @@
         {% for c in r.cells %}
           {% set code = c.code %}
           {% set cls = 'sch-default' %}
-          {% if code == 'A' %}
-            {% set cls = 'sch-a' %}
-          {% elif code == 'B' %}
-            {% set cls = 'sch-b' %}
-          {% elif code == 'C' %}
-            {% set cls = 'sch-c' %}
-          {% elif code == 'N' %}
-            {% set cls = 'sch-n' %}
-          {% elif code == 'X' %}
-            {% set cls = 'sch-x' %}
-          {% elif code == 'H' %}
-            {% set cls = 'sch-h' %}
-          {% elif code == 'L' %}
-            {% set cls = 'sch-l' %}
-          {% elif code.startswith('HD') %}
-            {% set cls = 'sch-hd' %}
-          {% elif code.startswith('V') %}
-            {% set cls = 'sch-v' %}
+          {% if c.is_holiday %}
+            {% set cls = cls + ' col-holiday' %}
+          {% elif c.is_weekend %}
+            {% set cls = cls + ' col-weekend' %}
           {% endif %}
-          <td class="{{ cls }}">{{ code }}</td>
+
+          {% if code == 'A' %}
+            {% set cls = cls + ' sch-a' %}
+          {% elif code == 'B' %}
+            {% set cls = cls + ' sch-b' %}
+          {% elif code == 'C' %}
+            {% set cls = cls + ' sch-c' %}
+          {% elif code == 'N' %}
+            {% set cls = cls + ' sch-n' %}
+          {% elif code == 'X' %}
+            {% set cls = cls + ' sch-x' %}
+          {% elif code == 'H' %}
+            {% set cls = cls + ' sch-h' %}
+          {% elif code == 'L' %}
+            {% set cls = cls + ' sch-l' %}
+          {% elif code.startswith('HD') %}
+            {% set cls = cls + ' sch-hd' %}
+          {% elif code.startswith('V') %}
+            {% set cls = cls + ' sch-v' %}
+          {% endif %}
+          <td class="{{ cls }}" title="{{ c.holiday_name or '' }}">{{ code }}</td>
         {% endfor %}
       </tr>
       {% endfor %}

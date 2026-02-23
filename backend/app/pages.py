@@ -3,6 +3,11 @@ import os
 import uuid
 from datetime import date, datetime
 from calendar import monthrange
+
+try:
+    import holidays as pyholidays
+except Exception:
+    pyholidays = None
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from fastapi import APIRouter, Request, Form, UploadFile, File
@@ -372,7 +377,33 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
     ).mappings().first()
 
     day_count = monthrange(month_start.year, month_start.month)[1]
-    days = list(range(1, day_count + 1))
+
+    thai_holiday_map: dict[int, str] = {}
+    if pyholidays is not None:
+        try:
+            th_holidays = pyholidays.country_holidays("TH", years=[month_start.year], language="th")
+            for d, name in th_holidays.items():
+                if d.year == month_start.year and d.month == month_start.month:
+                    thai_holiday_map[int(d.day)] = str(name)
+        except Exception:
+            thai_holiday_map = {}
+
+    weekday_th = ["จ", "อ", "พ", "พฤ", "ศ", "ส", "อา"]
+    day_meta = []
+    for d in range(1, day_count + 1):
+        dd = date(month_start.year, month_start.month, d)
+        w = dd.weekday()  # Mon=0..Sun=6
+        is_weekend = w >= 5
+        holiday_name = thai_holiday_map.get(d)
+        day_meta.append(
+            {
+                "day": d,
+                "weekday": weekday_th[w],
+                "is_weekend": is_weekend,
+                "holiday_name": holiday_name,
+                "is_holiday": holiday_name is not None,
+            }
+        )
 
     employees = db.execute(
         text(
@@ -414,9 +445,18 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
 
         for e in employees:
             day_cells = []
-            for d in days:
+            for dm in day_meta:
+                d = dm["day"]
                 code = by_emp_day.get((str(e["id"]), d), "")
-                day_cells.append({"day": d, "code": code})
+                day_cells.append(
+                    {
+                        "day": d,
+                        "code": code,
+                        "is_weekend": dm["is_weekend"],
+                        "is_holiday": dm["is_holiday"],
+                        "holiday_name": dm["holiday_name"],
+                    }
+                )
             matrix.append({
                 "emp_code": e["emp_code"],
                 "full_name": e["full_name"],
@@ -428,7 +468,7 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
         {
             "request": request,
             "month": month_start.strftime("%Y-%m"),
-            "days": days,
+            "day_meta": day_meta,
             "rows": matrix,
             "version": version,
         },

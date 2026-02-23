@@ -41,6 +41,11 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
 .matrix-table .sticky-col { position: sticky; background:#0f1a33; z-index:2; text-align:left; }
 .matrix-table .sticky-col-1 { left: 0; width:72px; min-width:72px; max-width:72px; }
 .matrix-table .sticky-col-2 { left: 72px; width:170px; min-width:170px; max-width:170px; }
+.day-header { font-weight:700; }
+.day-weekend { background:#2d2142 !important; color:#f0e9ff; }
+.day-holiday { background:#4b1f2b !important; color:#ffd6e2; }
+.col-weekend { background:#efe9ff; }
+.col-holiday { background:#ffe4ea; }
 .sch-a { background:#9fe7ff; color:#05141a; font-weight:700; }
 .sch-b { background:#ffd39f; color:#1a1105; font-weight:700; }
 .sch-c { background:#d6c4ff; color:#120a1f; font-weight:700; }
