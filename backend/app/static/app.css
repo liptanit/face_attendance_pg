@@ -53,10 +53,32 @@ video { width:100%; background:#000; border-radius:12px; border:1px solid #22335
   box-shadow: inset 0 -2px 0 #8ed0ff, 0 3px 10px rgba(19, 120, 255, 0.35);
   position: relative;
   z-index: 3;
+  animation: todayPulse 2.2s ease-in-out infinite;
 }
 .col-today {
   box-shadow: inset 0 0 0 2px #1e90ff;
   font-weight: 800;
+  animation: todayPulseSoft 2.2s ease-in-out infinite;
+}
+.today-badge {
+  display:inline-block;
+  font-size:9px;
+  font-weight:700;
+  color:#0b2a4a;
+  background:#9dd7ff;
+  border-radius:999px;
+  padding:1px 6px;
+  margin-bottom:2px;
+}
+.today-icon { font-size:11px; margin-left:2px; }
+
+@keyframes todayPulse {
+  0%, 100% { box-shadow: inset 0 -2px 0 #8ed0ff, 0 3px 10px rgba(19,120,255,0.35); }
+  50% { box-shadow: inset 0 -2px 0 #c7ebff, 0 6px 18px rgba(19,120,255,0.55); }
+}
+@keyframes todayPulseSoft {
+  0%, 100% { box-shadow: inset 0 0 0 2px #1e90ff; }
+  50% { box-shadow: inset 0 0 0 3px #58b2ff; }
 }
 .sch-a { background:#9fe7ff; color:#05141a; font-weight:700; }
 .sch-b { background:#ffd39f; color:#1a1105; font-weight:700; }

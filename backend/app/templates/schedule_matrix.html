@@ -68,7 +68,12 @@
           {% if today_day and dm.day == today_day %}
             {% set hcls = hcls + ' day-today' %}
           {% endif %}
-          <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">{{ dm.weekday }}</th>
+          <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">
+            {% if today_day and dm.day == today_day %}
+              <div class="today-badge">วันนี้</div>
+            {% endif %}
+            {{ dm.weekday }}
+          </th>
         {% endfor %}
       </tr>
       <tr>
@@ -83,7 +88,10 @@
             {% set hcls = hcls + ' day-today' %}
           {% endif %}
           <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">
-            <div>{{ dm.day }}</div>
+            <div>
+              {{ dm.day }}
+              {% if today_day and dm.day == today_day %}<span class="today-icon">📍</span>{% endif %}
+            </div>
             {% if dm.is_holiday %}
               <div class="holiday-name" title="{{ dm.holiday_name }}">{{ dm.holiday_name }}</div>
             {% endif %}
