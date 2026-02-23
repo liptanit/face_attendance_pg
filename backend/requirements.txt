@@ -9,3 +9,4 @@ apscheduler>=3.10
 itsdangerous>=2.2
 numpy>=1.26
 openpyxl>=3.1
+holidays>=0.61
