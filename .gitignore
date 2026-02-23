@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+backend/.venv/
+worker/.venv/
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
+# Runtime data
+storage/
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# temp backup
+.git_setup_backup/

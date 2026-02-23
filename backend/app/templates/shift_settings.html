@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h2>Shift Default Settings</h2>
+
+  {% if msg %}
+    <div class="card" style="margin:10px 0;">{{ msg }}</div>
+  {% endif %}
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Start Time</th>
+          <th>Grace (min)</th>
+          <th>Absent After (min)</th>
+          <th>Active</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <form method="post" action="/shifts/{{ r.code }}/update">
+              <td>{{ r.code }}</td>
+              <td>{{ r.name }}</td>
+              <td><input type="time" name="start_time" value="{{ r.start_time }}" required style="max-width:140px;" /></td>
+              <td><input type="number" name="grace_minutes" value="{{ r.grace_minutes }}" min="0" max="180" style="max-width:120px;" /></td>
+              <td><input type="number" name="absent_after_minutes" value="{{ r.absent_after_minutes }}" min="0" max="600" style="max-width:150px;" /></td>
+              <td><input type="checkbox" name="is_active" value="1" {% if r.is_active %}checked{% endif %} style="width:auto;" /></td>
+              <td><button type="submit">Save</button></td>
+            </form>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Enroll (Webcam)</h1>
+  <div class="card">
+    <div><b>{{ emp.emp_code }}</b> — {{ emp.full_name }}</div>
+    <p>Capture 15–25 images (front + slight left/right). Then finalize.</p>
+
+    <div class="enroll-grid">
+      <div>
+        <video id="video" autoplay playsinline></video>
+        <div class="row">
+          <button id="btnStart" type="button">Start camera</button>
+          <button id="btnCapture" type="button" disabled>Capture</button>
+          <button id="btnFinalize" type="button" disabled>Finalize</button>
+        </div>
+        <div class="muted" id="status">Session: {{ session_id }}</div>
+      </div>
+      <div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sessionId = "{{ session_id }}";
+    const video = document.getElementById("video");
+    const btnStart = document.getElementById("btnStart");
+    const btnCapture = document.getElementById("btnCapture");
+    const btnFinalize = document.getElementById("btnFinalize");
+    const statusEl = document.getElementById("status");
+    const thumbs = document.getElementById("thumbs");
+
+    let stream = null;
+    let count = 0;
+
+    async function startCam(){
+      stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+      video.srcObject = stream;
+      btnCapture.disabled = false;
+      statusEl.textContent = "Camera started.";
+    }
+
+    async function capture(){
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0);
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.9));
+
+      const form = new FormData();
+      form.append("file", blob, "frame.jpg");
+
+      const r = await fetch(`/api/enroll/${sessionId}/upload`, {method: "POST", body: form});
+      const j = await r.json();
+      if(!j.ok){
+        alert(j.error || "upload failed");
+        return;
+      }
+      count = j.count;
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(blob);
+      thumbs.prepend(img);
+
+      statusEl.textContent = `Captured: ${count}`;
+      if(count >= 10) btnFinalize.disabled = false;
+    }
+
+    async function finalize(){
+      btnFinalize.disabled = true;
+      statusEl.textContent = "Finalizing...";
+      const r = await fetch(`/api/enroll/${sessionId}/finalize`, {method: "POST"});
+      const ct = (r.headers.get("content-type") || "").toLowerCase();
+      let j = null;
+      if(ct.includes("application/json")){
+        j = await r.json();
+      } else {
+        const t = await r.text();
+        throw new Error(t.slice(0, 200));
+      }
+      if(!j.ok){
+        alert(j.error || "finalize failed");
+        btnFinalize.disabled = false;
+        statusEl.textContent = "Finalize failed.";
+        return;
+      }
+      alert(`Enrollment complete. Templates saved: ${j.templates_saved}`);
+      window.location.href = "/employees";
+    }
+
+    btnStart.addEventListener("click", () => startCam().catch(e => alert(e)));
+    btnCapture.addEventListener("click", () => capture().catch(e => alert(e)));
+    btnFinalize.addEventListener("click", () => finalize().catch(e => alert(e)));
+  </script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Monthly Report</h1>
+  <div class="card" style="margin-bottom:12px;">
+    <form method="get" action="/report/monthly" class="row">
+      <label style="margin:0;">Month (YYYY-MM)</label>
+      <input name="month" value="{{ month }}" style="max-width:180px;" />
+      <button type="submit">Load</button>
+      <a class="btn" href="/report/monthly/export?month={{ month }}">Export Excel</a>
+    </form>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Emp Code</th><th>Name</th><th>ON_TIME</th><th>LATE</th><th>ABSENT</th><th>EXEMPT</th><th>OFF</th><th>Late Minutes</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.emp_code }}</td>
+          <td>{{ r.full_name }}</td>
+          <td><span class="badge badge-on_time">{{ r.on_time_count }}</span></td>
+          <td><span class="badge badge-late">{{ r.late_count }}</span></td>
+          <td><span class="badge badge-absent">{{ r.absent_count }}</span></td>
+          <td><span class="badge badge-exempt">{{ r.exempt_count }}</span></td>
+          <td><span class="badge badge-off">{{ r.off_count }}</span></td>
+          <td>{{ r.late_minutes_total }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

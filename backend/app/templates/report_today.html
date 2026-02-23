@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Today Report ({{ tz }})</h1>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Emp Code</th><th>Name</th><th>Check-in (Thai time)</th><th>Status</th><th>Late(min)</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.emp_code }}</td>
+          <td>{{ r.full_name }}</td>
+          <td>{{ r.check_in_th }}</td>
+          <td><span class="badge badge-{{ (r.attendance_status or 'ON_TIME') | lower }}">{{ r.attendance_status or 'ON_TIME' }}</span></td>
+          <td>{{ r.minutes_late or 0 }}</td>
+          <td>{{ r.policy_note or '' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

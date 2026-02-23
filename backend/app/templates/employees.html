@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h1>Employees</h1>
+
+  <section class="grid">
+    <form method="post" action="/employees" class="card">
+      <h2>Add employee</h2>
+      <label>Emp Code</label>
+      <input name="emp_code" required />
+      <label>Full name</label>
+      <input name="full_name" required />
+      <label>Department</label>
+      <input name="department" />
+      <button type="submit">Add</button>
+    </form>
+
+    <div class="card">
+      <h2>List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Emp Code</th><th>Name</th><th>Dept</th><th>Active</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in employees %}
+          <tr>
+            <form method="post" action="/employees/{{ e.id }}/update">
+              <td><input name="emp_code" value="{{ e.emp_code }}" required /></td>
+              <td><input name="full_name" value="{{ e.full_name }}" required /></td>
+              <td><input name="department" value="{{ e.department or '' }}" /></td>
+              <td>
+                <label style="margin:0; display:flex; align-items:center; gap:6px;">
+                  <input type="checkbox" name="is_active" value="1" {% if e.is_active %}checked{% endif %} style="width:auto; margin:0;" />
+                  Active
+                </label>
+                {% if e.deleted_at %}
+                  <div class="muted">deleted: {{ e.deleted_at }} by {{ e.deleted_by or '-' }}</div>
+                {% endif %}
+              </td>
+              <td>
+                <button type="submit">Save</button>
+                <a class="btn" href="/employees/{{ e.id }}/enroll">Enroll</a>
+            </form>
+                <form method="post" action="/employees/{{ e.id }}/delete" style="display:inline;" onsubmit="return confirm('Soft delete employee {{ e.emp_code }} ?');">
+                  <input type="password" name="admin_password" placeholder="Admin password" required style="width:140px; display:inline-block;" />
+                  <button type="submit" style="background:#4c1720; border-color:#7e2b39;">Soft Delete</button>
+                </form>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
