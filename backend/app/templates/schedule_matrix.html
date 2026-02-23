@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
+<style>
+  /* Full-width layout for matrix page */
+  .container { max-width: 98vw !important; }
+</style>
 <h1>Schedule Matrix</h1>
 
 <form method="get" action="/schedule/matrix" class="row" style="margin-bottom:10px;align-items:end;">
@@ -35,7 +39,7 @@
   </div>
 </div>
 
-<div class="card" style="overflow:auto;">
+<div class="card">
   <table class="matrix-table">
     <thead>
       <tr>
