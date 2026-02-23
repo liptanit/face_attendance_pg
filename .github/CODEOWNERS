@@ -1,0 +1,8 @@
+# Default owners
+* @liptanit
+
+# Core areas
+/backend/ @liptanit
+/worker/ @liptanit
+/deploy_windows/ @liptanit
+/.github/ @liptanit
