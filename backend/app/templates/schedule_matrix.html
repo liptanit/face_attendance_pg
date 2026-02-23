@@ -65,6 +65,9 @@
           {% elif dm.is_weekend %}
             {% set hcls = hcls + ' day-weekend' %}
           {% endif %}
+          {% if today_day and dm.day == today_day %}
+            {% set hcls = hcls + ' day-today' %}
+          {% endif %}
           <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">{{ dm.weekday }}</th>
         {% endfor %}
       </tr>
@@ -75,6 +78,9 @@
             {% set hcls = hcls + ' day-holiday' %}
           {% elif dm.is_weekend %}
             {% set hcls = hcls + ' day-weekend' %}
+          {% endif %}
+          {% if today_day and dm.day == today_day %}
+            {% set hcls = hcls + ' day-today' %}
           {% endif %}
           <th class="{{ hcls }} day-col" data-day="{{ dm.day }}" data-special="{{ '1' if (dm.is_weekend or dm.is_holiday) else '0' }}" title="{{ dm.holiday_name or '' }}">
             <div>{{ dm.day }}</div>
@@ -97,6 +103,9 @@
             {% set cls = cls + ' col-holiday' %}
           {% elif c.is_weekend %}
             {% set cls = cls + ' col-weekend' %}
+          {% endif %}
+          {% if today_day and c.day == today_day %}
+            {% set cls = cls + ' col-today' %}
           {% endif %}
 
           {% if code == 'A' %}

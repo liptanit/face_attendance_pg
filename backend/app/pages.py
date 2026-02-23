@@ -463,6 +463,11 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
                 "cells": day_cells,
             })
 
+    today_local = datetime.now(ZoneInfo(settings.TZ)).date()
+    today_day = None
+    if today_local.year == month_start.year and today_local.month == month_start.month:
+        today_day = today_local.day
+
     return templates.TemplateResponse(
         "schedule_matrix.html",
         {
@@ -471,6 +476,7 @@ def schedule_matrix(request: Request, month: str | None = None, db: Session = De
             "day_meta": day_meta,
             "rows": matrix,
             "version": version,
+            "today_day": today_day,
         },
     )
 
