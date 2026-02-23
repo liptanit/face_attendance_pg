@@ -92,7 +92,7 @@
         <td class="sticky-col sticky-col-2">{{ r.full_name }}</td>
         {% for c in r.cells %}
           {% set code = c.code %}
-          {% set cls = 'sch-default' %}
+          {% set cls = '' %}
           {% if c.is_holiday %}
             {% set cls = cls + ' col-holiday' %}
           {% elif c.is_weekend %}
@@ -117,6 +117,8 @@
             {% set cls = cls + ' sch-hd' %}
           {% elif code.startswith('V') %}
             {% set cls = cls + ' sch-v' %}
+          {% else %}
+            {% set cls = cls + ' sch-default' %}
           {% endif %}
           <td class="{{ cls }} day-col" data-day="{{ c.day }}" data-special="{{ '1' if (c.is_weekend or c.is_holiday) else '0' }}" title="{{ c.holiday_name or '' }}">{{ code }}</td>
         {% endfor %}
